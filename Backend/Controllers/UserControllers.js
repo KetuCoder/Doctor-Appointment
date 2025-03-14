@@ -19,7 +19,7 @@ export const RegisterUser = async (req,res) => {
         const userData = { email , name , password : hash }
         const newUser = UserModel(userData);
         const user = await newUser.save()
-        const token = jwt.sign({id:user._id},process.env.JWT);
+        const token = jwt.sign({id:user._id},process.env.JWT_TOKEN);
         res.json({ Success : true , token });
     } catch (error) {
         console.log(error)
@@ -42,7 +42,7 @@ export const LoginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         
         if (isMatch) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT);
+            const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
             return res.json({ Success: true, token });
         } else {
             return res.json({ Success: false, Message: "Invalid Password!" });
@@ -110,7 +110,7 @@ export const Appointment = async (req,res) => {
         const newAppointment = new AppointmentModel(appointmentsData);
         await newAppointment.save()
 
-        await DoctorModel.findByIdAndUpdate(docId,{slots_booked})
+        await DoctorModel.findByIdAndUpdate(docId,{slots_booked});
 
         res.json({ Success : true , Message : "Appointment Booked !" });
 

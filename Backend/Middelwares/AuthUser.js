@@ -6,7 +6,7 @@ const AuthUser = async (req,res,next) => {
         if(!token){
             return res.json({ Success : false , Message : "Not Authorized Login Again !" })
         }
-        const decode = await jwt.verify(token,process.env.JWT)
+        const decode = await jwt.verify(token,process.env.JWT_TOKEN)
         req.body.userId = decode.id
         next()
     } catch (error) {

@@ -15,9 +15,9 @@ export const AddDoctor = async (req, res) => {
       return res.status(400).json({ message: "Image is required" });
     }
 
-    if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !experience || !address) {
-      return res.json({ Success: false, Message: "All Fields Are Required !" });
-    }
+    // if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !experience || !address) {
+    //   return res.json({ Success: false, Message: "All Fields Are Required !" });
+    // }
 
     if (!validator.isEmail(email)) {
       return res.json({ Success: false, Message: "Email Is Incorrect!" });
@@ -47,7 +47,7 @@ export const LoginAdmin = async (req,res) => {
   try {
     const { email , password } = req.body;
     if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-        const Token = jwt.sign(email+password,process.env.JWT);
+        const Token = jwt.sign(email+password,process.env.JWT_TOKEN);
         res.json({ Success : true , Token })
     }else{
       return res.json({ Success : false , Message : "Invalid Credentials !" })
