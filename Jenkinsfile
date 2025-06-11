@@ -8,47 +8,49 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies - Admin') {
-            steps {
-                dir('Admin') {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Install Dependencies - Frontend') {
-            steps {
-                dir('Frontend') {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Install Dependencies - Backend') {
-            steps {
-                dir('Backend') {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Build/Run Apps (optional)') {
+        stage('Install Dependencies') {
             parallel {
-                stage('Run Admin') {
+                stage('Admin') {
+                    steps {
+                        dir('Admin') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+                stage('Frontend') {
+                    steps {
+                        dir('Frontend') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+                stage('Backend') {
+                    steps {
+                        dir('Backend') {
+                            sh 'npm install'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build/Run Apps') {
+            parallel {
+                stage('Build Admin') {
                     steps {
                         dir('Admin') {
                             sh 'npm run build || echo "No build script in Admin"'
                         }
                     }
                 }
-                stage('Run Frontend') {
+                stage('Build Frontend') {
                     steps {
                         dir('Frontend') {
                             sh 'npm run build || echo "No build script in Frontend"'
                         }
                     }
                 }
-                stage('Run Backend') {
+                stage('Start Backend') {
                     steps {
                         dir('Backend') {
                             sh 'npm run start || echo "No start script in Backend"'
@@ -56,6 +58,15 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
