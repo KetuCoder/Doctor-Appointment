@@ -4,8 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/KetuCoder/Doctor-Appointment.git
-'
+                git branch: 'main', url: 'https://github.com/KetuCoder/Doctor-Appointment.git'
             }
         }
 
