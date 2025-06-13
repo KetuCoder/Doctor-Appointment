@@ -33,7 +33,7 @@ export const LoginDoctor = async (req,res) => {
         }
         const isMatch = await bcyrpt.compare(password,doctor.password);
         if(isMatch){
-            const token = jwt.sign({id:doctor._id},process.env.JWT)
+            const token = jwt.sign({id:doctor._id},process.env.TOKEN)
             res.json({ Success : true , token });
         }else{
             res.json({ Success : false , Message : "InValid Credentials "})
