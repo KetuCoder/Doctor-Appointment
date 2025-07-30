@@ -1,0 +1,17 @@
+version: '3'
+services:
+  client:
+    build: ./Frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+  server:
+    build: ./Backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI= mongodb+srv://ambureketan:ketan@cluster0.p4c5u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    env_file:
+      - ./Backend/.env
