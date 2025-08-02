@@ -1,72 +1,53 @@
-pipeline {
+pipeline{
     agent any
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/KetuCoder/Doctor-Appointment.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            parallel {
-                stage('Admin') {
-                    steps {
-                        dir('Admin') {
-                            bat 'npm install'
-                        }
-                    }
-                }
-                stage('Frontend') {
-                    steps {
-                        dir('Frontend') {
-                            bat 'npm install'
-                        }
-                    }
-                }
-                stage('Backend') {
-                    steps {
-                        dir('Backend') {
-                            bat 'npm install'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Build/Run Apps') {
-            parallel {
-                stage('Build Admin') {
-                    steps {
-                        dir('Admin') {
-                            bat 'npm run build || echo "No build script in Admin"'
-                        }
-                    }
-                }
-                stage('Build Frontend') {
-                    steps {
-                        dir('Frontend') {
-                            bat 'npm run build || echo "No build script in Frontend"'
-                        }
-                    }
-                }
-                stage('Start Backend') {
-                    steps {
-                        dir('Backend') {
-                            bat 'npm run start || echo "No start script in Backend"'
-                        }
-                    }
-                }
-            }
-        }
+    tools{
+        jdk 'jdk17'
+        nodejs 'node23'
     }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully.'
+    environment {
+        SCANNER_HOME=tool 'sonar-scanner'
+    }
+    stages {
+        stage('clean workspace'){
+            steps{
+                cleanWs()
+            }
         }
-        failure {
-            echo 'Pipeline failed.'
+        stage('Checkout from Git'){
+            steps{
+                git 'https://github.com/Kartikpawar143/DevOps-Project-Swiggy.git'
+            }
+        }
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Swiggy \
+                    -Dsonar.projectKey=Swiggy '''
+                }
+            }
+        }
+        stage("Quality Gate"){
+           steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                }
+            } 
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
+        stage('Owasp Fs Scan') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        stage('Trivy Fs Scan') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
         }
     }
 }
