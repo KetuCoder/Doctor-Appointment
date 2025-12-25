@@ -9,9 +9,9 @@ import AppointmentModel from '../Models/Appointment.js'
 export const RegisterUser = async (req,res) => {
     try {
         const { name , email , password } = req.body;
-        if(!name || !email || !password){
-            return res.json({ Success : false , Message : "Missing Details !"})
-        }
+        // if(!name || !email || !password){
+        //     return res.json({ Success : false , Message : "Missing Details !"})
+        // }
         if(!validator.isEmail(email)){
             return res.json({ Success : false , Message : "Incorrect Email !"})
         }
@@ -19,11 +19,11 @@ export const RegisterUser = async (req,res) => {
         const userData = { email , name , password : hash }
         const newUser = UserModel(userData);
         const user = await newUser.save()
-        const token = jwt.sign({id:user._id},process.env.JWT_TOKEN);
+        const token = jwt.sign({id:user._id},process.env.TOKEN_JWT,{ expiresIn : "10h" });
         res.json({ Success : true , token });
     } catch (error) {
         console.log(error)
-        return res.json({ Success : false , Message : "Internal Server Error !"})
+        return res.json({ Success : false , Message : "Internal Server Error!"})
     }
 
 }
@@ -42,7 +42,7 @@ export const LoginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         
         if (isMatch) {
-            const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
+            const token = jwt.sign({ id: user._id }, process.env.TOKEN_JWT);
             return res.json({ Success: true, token });
         } else {
             return res.json({ Success: false, Message: "Invalid Password!" });

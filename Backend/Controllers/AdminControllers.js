@@ -47,7 +47,7 @@ export const LoginAdmin = async (req,res) => {
   try {
     const { email , password } = req.body;
     if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-        const Token = jwt.sign(email+password,process.env.JWT_TOKEN);
+        const Token = jwt.sign(email+password,process.env.TOKEN_JWT);
         res.json({ Success : true , Token })
     }else{
       return res.json({ Success : false , Message : "Invalid Credentials !" })
