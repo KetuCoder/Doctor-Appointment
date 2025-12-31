@@ -110,11 +110,11 @@ pipeline {
                     kubectl get nodes
                     """
 
-                    dir('Backend/k8s') {
+                    dir('Backend/K8s') {
                         sh 'kubectl apply -f .'
                     }
 
-                    dir('Frontend/k8s') {
+                    dir('Frontend/K8s') {
                         sh 'kubectl apply -f .'
                     }
                 }
